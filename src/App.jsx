@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Menu from './Menu.jsx'
 import Game from './Game.jsx'
 import Results from './Results.jsx'
+import SoundToggle from './components/SoundToggle.jsx'
 
 /**
  * Top-level state machine for the math-practice app.
@@ -19,12 +20,17 @@ import Results from './Results.jsx'
  * `key` on the `<Game>` element to guarantee a full remount on Play
  * Again — this throws away the previous round's questions, progress,
  * and feedback state, which is the behavior PLAN.md T4 asks for.
+ *
+ * `soundOn` (T6) is lifted up here so the toggle survives screen
+ * transitions within a session. Default is off per SPEC.md; we do not
+ * persist to localStorage — reloading the tab starts silent.
  */
 export default function App() {
   const [screen, setScreen] = useState('menu')
   const [mode, setMode] = useState(null)
   const [result, setResult] = useState(null)
   const [roundId, setRoundId] = useState(0)
+  const [soundOn, setSoundOn] = useState(false)
 
   const startGame = (selectedMode) => {
     setMode(selectedMode)
@@ -51,13 +57,22 @@ export default function App() {
     setScreen('game')
   }
 
+  const toggleSound = () => {
+    setSoundOn((v) => !v)
+  }
+
   return (
     <div className="app">
+      {/* Pinned corner toggle — lives outside the per-screen content
+          so it renders on every screen and its `on` state survives
+          every transition. */}
+      <SoundToggle on={soundOn} onToggle={toggleSound} />
       {screen === 'menu' && <Menu onSelectMode={startGame} />}
       {screen === 'game' && (
         <Game
           key={roundId}
           mode={mode}
+          soundOn={soundOn}
           onFinish={finishGame}
           onBackToMenu={backToMenu}
         />

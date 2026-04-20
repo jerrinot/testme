@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Celebration from './components/Celebration.jsx'
+import { playTone } from './lib/sound.js'
 
 const DEFAULT_CORRECT_DELAY_MS = 700
 
@@ -29,6 +30,7 @@ export default function Question({
   onCorrect,
   onWrong,
   onCorrectClick,
+  soundOn = false,
   correctDelayMs = DEFAULT_CORRECT_DELAY_MS,
 }) {
   // `feedback` is { value, kind } where kind ∈ {'correct', 'wrong'}.
@@ -61,12 +63,16 @@ export default function Question({
       // mascot wiggle / sound / any other side-effect the instant the
       // kid clicks, not after the celebration delay.
       if (onCorrectClick) onCorrectClick()
+      // Cheerful tone — only if the user has toggled sound on.
+      if (soundOn) playTone('correct')
       timerRef.current = setTimeout(() => {
         timerRef.current = null
         onCorrect()
       }, correctDelayMs)
     } else {
       setFeedback({ value: choice, kind: 'wrong' })
+      // Softer "oops" tone, gated on the same flag.
+      if (soundOn) playTone('wrong')
       onWrong()
     }
   }

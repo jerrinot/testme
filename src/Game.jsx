@@ -33,6 +33,7 @@ export default function Game({
   mode,
   onFinish,
   onBackToMenu,
+  soundOn = false,
   total = TOTAL_QUESTIONS,
   correctDelayMs,
   questions: providedQuestions,
@@ -94,6 +95,7 @@ export default function Game({
         onCorrect={handleCorrect}
         onWrong={handleWrong}
         onCorrectClick={handleCorrectClick}
+        soundOn={soundOn}
         correctDelayMs={correctDelayMs}
       />
       <button type="button" className="back-link" onClick={onBackToMenu}>

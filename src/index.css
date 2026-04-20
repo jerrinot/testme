@@ -532,6 +532,54 @@ body {
   color: #463200;
 }
 
+/* ---------- Sound toggle (T6) ---------- */
+
+.sound-toggle {
+  /* Pinned to the viewport corner so it rides along across every
+   * screen. `fixed` keeps it visible even if content scrolls. */
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 40;
+  min-width: 52px;
+  min-height: 52px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--fg);
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(42, 33, 64, 0.15);
+  transition: transform 100ms ease-out, filter 120ms ease-out,
+    background-color 140ms ease-out;
+  backdrop-filter: blur(6px);
+}
+
+.sound-toggle:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.1);
+}
+
+.sound-toggle:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(42, 33, 64, 0.15);
+}
+
+.sound-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 4px 0 rgba(42, 33, 64, 0.15), var(--focus-ring);
+}
+
+.sound-toggle-on {
+  background: var(--accent-sub);
+  color: #073b26;
+}
+
 /* ---------- Keyframes ---------- */
 
 @keyframes menu-title-pop {
