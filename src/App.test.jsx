@@ -9,23 +9,23 @@ describe('App screen state machine', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: /math fun/i }),
     ).toBeInTheDocument()
-    // Game placeholder should not be visible.
-    expect(screen.queryByText(/game:/i)).toBeNull()
+    // Game screen should not be mounted yet.
+    expect(screen.queryByTestId('game-screen')).toBeNull()
   })
 
   it.each([
-    ['addition', /addition/i, /game: addition/i],
-    ['subtraction', /subtraction/i, /game: subtraction/i],
-    ['mixed', /mixed/i, /game: mixed/i],
+    ['addition', /addition/i],
+    ['subtraction', /subtraction/i],
+    ['mixed', /mixed/i],
   ])(
     'clicking %s transitions to the game screen for that mode',
-    async (_mode, buttonLabel, headingText) => {
+    async (mode, buttonLabel) => {
       const user = userEvent.setup()
       render(<App />)
       await user.click(screen.getByRole('button', { name: buttonLabel }))
-      expect(
-        screen.getByRole('heading', { level: 2, name: headingText }),
-      ).toBeInTheDocument()
+      const gameScreen = screen.getByTestId('game-screen')
+      expect(gameScreen).toBeInTheDocument()
+      expect(gameScreen).toHaveAttribute('data-mode', mode)
       // Menu title should be gone.
       expect(
         screen.queryByRole('heading', { level: 1, name: /math fun/i }),
@@ -37,15 +37,13 @@ describe('App screen state machine', () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(screen.getByRole('button', { name: /addition/i }))
-    expect(
-      screen.getByRole('heading', { level: 2, name: /game: addition/i }),
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('game-screen')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /back to menu/i }))
     expect(
       screen.getByRole('heading', { level: 1, name: /math fun/i }),
     ).toBeInTheDocument()
-    expect(screen.queryByText(/game:/i)).toBeNull()
+    expect(screen.queryByTestId('game-screen')).toBeNull()
   })
 
   it('back-to-menu then a different mode launches the new mode', async () => {
@@ -54,8 +52,9 @@ describe('App screen state machine', () => {
     await user.click(screen.getByRole('button', { name: /addition/i }))
     await user.click(screen.getByRole('button', { name: /back to menu/i }))
     await user.click(screen.getByRole('button', { name: /subtraction/i }))
-    expect(
-      screen.getByRole('heading', { level: 2, name: /game: subtraction/i }),
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('game-screen')).toHaveAttribute(
+      'data-mode',
+      'subtraction',
+    )
   })
 })
