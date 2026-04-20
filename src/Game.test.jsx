@@ -149,6 +149,44 @@ describe('Game', () => {
     })
   })
 
+  it('renders a mascot on the game screen', () => {
+    renderGame()
+    const mascot = screen.getByTestId('mascot')
+    expect(mascot).toBeInTheDocument()
+    // data-animal should be populated with one of the SPEC emoji.
+    expect(mascot.getAttribute('data-animal')).toBeTruthy()
+  })
+
+  it('triggers a mascot celebration (wiggle) on a correct click', async () => {
+    const user = userEvent.setup()
+    renderGame()
+    const mascotBefore = screen
+      .getByTestId('mascot')
+      .querySelector('.mascot-body')
+    expect(mascotBefore.classList.contains('mascot-celebrating')).toBe(false)
+
+    await answerCorrectly(user)
+    // The mascot-body remounts on celebrate tick; querying again picks
+    // up the new element with the one-shot celebrating class.
+    await waitFor(() => {
+      const mascotAfter = screen
+        .getByTestId('mascot')
+        .querySelector('.mascot-body')
+      expect(mascotAfter.classList.contains('mascot-celebrating')).toBe(true)
+    })
+  })
+
+  it('shows a star-burst celebration overlay during correct feedback', async () => {
+    const user = userEvent.setup()
+    // Big delay so we can observe the overlay before the question
+    // advances and the Celebration unmounts with the old Question.
+    renderGame({ correctDelayMs: 500 })
+    expect(screen.queryByTestId('celebration')).toBeNull()
+    await user.click(screen.getByRole('button', { name: '5' }))
+    const overlay = await screen.findByTestId('celebration')
+    expect(overlay).toHaveAttribute('data-kind', 'stars')
+  })
+
   it('back-to-menu button calls onBackToMenu', async () => {
     const user = userEvent.setup()
     const onBackToMenu = vi.fn()

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import Celebration from './components/Celebration.jsx'
 
 const DEFAULT_CORRECT_DELAY_MS = 700
 
@@ -27,6 +28,7 @@ export default function Question({
   total,
   onCorrect,
   onWrong,
+  onCorrectClick,
   correctDelayMs = DEFAULT_CORRECT_DELAY_MS,
 }) {
   // `feedback` is { value, kind } where kind ∈ {'correct', 'wrong'}.
@@ -55,6 +57,10 @@ export default function Question({
     if (locked) return
     if (choice === question.answer) {
       setFeedback({ value: choice, kind: 'correct' })
+      // Fire the immediate signal so the parent (Game) can kick off
+      // mascot wiggle / sound / any other side-effect the instant the
+      // kid clicks, not after the celebration delay.
+      if (onCorrectClick) onCorrectClick()
       timerRef.current = setTimeout(() => {
         timerRef.current = null
         onCorrect()
@@ -66,17 +72,24 @@ export default function Question({
   }
 
   const { a, b, op, choices } = question
+  const showStarBurst = feedback?.kind === 'correct'
 
   return (
     <div className="question">
       <div className="question-progress">
         Question {questionNumber} / {total}
       </div>
-      <div className="equation" data-testid="equation">
-        <span className="equation-a">{a}</span>{' '}
-        <span className="equation-op">{op}</span>{' '}
-        <span className="equation-b">{b}</span> ={' '}
-        <span className="equation-answer">?</span>
+      <div className="equation-wrap">
+        <div className="equation" data-testid="equation">
+          <span className="equation-a">{a}</span>{' '}
+          <span className="equation-op">{op}</span>{' '}
+          <span className="equation-b">{b}</span> ={' '}
+          <span className="equation-answer">?</span>
+        </div>
+        {/* Star-burst is absolutely positioned over the equation area;
+            it only mounts after a correct click. `active` toggles the
+            overlay off again when the Question remounts. */}
+        <Celebration active={showStarBurst} kind="stars" />
       </div>
       <div className="choices">
         {choices.map((choice, idx) => {

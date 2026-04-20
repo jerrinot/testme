@@ -1,3 +1,5 @@
+import Celebration from './components/Celebration.jsx'
+
 /**
  * Results screen shown after a 10-question round.
  *
@@ -45,6 +47,9 @@ export default function Results({ result, onPlayAgain, onBackToMenu }) {
 
   return (
     <div className="results">
+      {/* Confetti burst shown whenever the results screen mounts. It's
+          purely decorative, so aria-hidden is set by Celebration. */}
+      <Celebration active kind="confetti" />
       <h2 className="results-title">Great job! 🎉</h2>
 
       <div

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import Question from './Question.jsx'
+import Mascot from './components/Mascot.jsx'
 import { generateQuestion } from './lib/questions.js'
 
 const TOTAL_QUESTIONS = 10
@@ -52,6 +53,10 @@ export default function Game({
   const [index, setIndex] = useState(0)
   const [firstTryCorrect, setFirstTryCorrect] = useState(0)
   const [hadWrongThisQuestion, setHadWrongThisQuestion] = useState(false)
+  // Counter the Mascot keys off to restart its wiggle animation each
+  // time a correct answer is clicked. Idle bounce runs continuously; a
+  // bump here overlays a one-shot jump-wiggle.
+  const [celebrateTick, setCelebrateTick] = useState(0)
 
   const handleCorrect = () => {
     const gotFirstTry = !hadWrongThisQuestion
@@ -70,10 +75,15 @@ export default function Game({
     setHadWrongThisQuestion(true)
   }
 
+  const handleCorrectClick = () => {
+    setCelebrateTick((n) => n + 1)
+  }
+
   const question = questions[index]
 
   return (
     <div className="game" data-testid="game-screen" data-mode={mode}>
+      <Mascot celebrateTick={celebrateTick} />
       <Question
         // `key` forces a fresh Question instance per round position so
         // feedback state resets cleanly on advance.
@@ -83,6 +93,7 @@ export default function Game({
         total={total}
         onCorrect={handleCorrect}
         onWrong={handleWrong}
+        onCorrectClick={handleCorrectClick}
         correctDelayMs={correctDelayMs}
       />
       <button type="button" className="back-link" onClick={onBackToMenu}>

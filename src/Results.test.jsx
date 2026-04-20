@@ -74,6 +74,15 @@ describe('Results', () => {
     expect(onPlayAgain).not.toHaveBeenCalled()
   })
 
+  it('renders a confetti celebration overlay', () => {
+    renderResults()
+    const overlay = screen.getByTestId('celebration')
+    expect(overlay).toHaveAttribute('data-kind', 'confetti')
+    expect(screen.getAllByTestId('celebration-piece').length).toBeGreaterThan(
+      0,
+    )
+  })
+
   it('renders safely when result is missing (defensive fallback)', () => {
     render(
       <Results
