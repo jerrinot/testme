@@ -14,17 +14,22 @@ import Results from './Results.jsx'
  * `mode` is one of 'addition' | 'subtraction' | 'mixed' once a game has
  * started; it stays set across game → results so "Play Again" can reuse
  * the same mode without going through the menu.
+ *
+ * `roundId` increments every time a new round starts. It's used as a
+ * `key` on the `<Game>` element to guarantee a full remount on Play
+ * Again — this throws away the previous round's questions, progress,
+ * and feedback state, which is the behavior PLAN.md T4 asks for.
  */
 export default function App() {
   const [screen, setScreen] = useState('menu')
   const [mode, setMode] = useState(null)
-  // `result` is populated by the Game screen when a round ends; T2
-  // ships a placeholder Results screen so the state machine compiles.
   const [result, setResult] = useState(null)
+  const [roundId, setRoundId] = useState(0)
 
   const startGame = (selectedMode) => {
     setMode(selectedMode)
     setResult(null)
+    setRoundId((n) => n + 1)
     setScreen('game')
   }
 
@@ -38,8 +43,11 @@ export default function App() {
   }
 
   const playAgain = () => {
-    // Restart the same mode with a fresh game.
+    // Restart the same mode with a fresh game. Bumping roundId
+    // changes the Game component's `key`, which forces a clean
+    // remount — new questions, progress=0, no stale feedback.
     setResult(null)
+    setRoundId((n) => n + 1)
     setScreen('game')
   }
 
@@ -47,7 +55,12 @@ export default function App() {
     <div className="app">
       {screen === 'menu' && <Menu onSelectMode={startGame} />}
       {screen === 'game' && (
-        <Game mode={mode} onFinish={finishGame} onBackToMenu={backToMenu} />
+        <Game
+          key={roundId}
+          mode={mode}
+          onFinish={finishGame}
+          onBackToMenu={backToMenu}
+        />
       )}
       {screen === 'results' && (
         <Results

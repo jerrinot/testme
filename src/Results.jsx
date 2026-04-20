@@ -1,25 +1,90 @@
 /**
- * Placeholder results screen.
+ * Results screen shown after a 10-question round.
  *
- * T4 fills in the real star rating and replay UX. T2 ships a stub so
- * the App state machine has a concrete component to render for the
- * 'results' screen.
+ * Displays:
+ *   - 1–3 star rating, derived purely from `firstTryCorrect`.
+ *   - "You got X out of 10 right on the first try!" count sentence.
+ *   - Two buttons: Play Again (same mode) and Back to Menu.
+ *
+ * `result` is the payload Game emitted via `onFinish`:
+ *   `{ mode, firstTryCorrect, total }`.
+ *
+ * `mode` is also passed separately — App keeps it in its own state so
+ * Play Again can relaunch without routing back through the menu; it's
+ * used here only for display (kept implicit — the screen itself is
+ * mode-agnostic).
+ *
+ * Play Again and Back to Menu are wired up by the parent. See the
+ * note on `starsForScore` below for the rating cutoffs.
  */
-export default function Results({ result, mode, onPlayAgain, onBackToMenu }) {
+
+const TOTAL_STARS = 3
+
+/**
+ * Pure helper: map first-try-correct count to a 1–3 star rating.
+ *
+ *   - 9–10 correct → 3 stars
+ *   - 6–8  correct → 2 stars
+ *   - 0–5  correct → 1 star
+ *
+ * Exported for unit testing and potential reuse.
+ */
+export function starsForScore(firstTryCorrect) {
+  if (firstTryCorrect >= 9) return 3
+  if (firstTryCorrect >= 6) return 2
+  return 1
+}
+
+export default function Results({ result, onPlayAgain, onBackToMenu }) {
+  // Defensive: if App ever renders Results without a result payload
+  // (shouldn't happen in normal flow), fall back to zeros so the
+  // screen still renders something reasonable instead of crashing.
+  const firstTryCorrect = result?.firstTryCorrect ?? 0
+  const total = result?.total ?? 10
+  const stars = starsForScore(firstTryCorrect)
+
   return (
-    <div className="results results-placeholder">
-      <h2>Results</h2>
-      <p>Results screen coming soon.</p>
-      {result && (
-        <p>
-          Score: {result.firstTryCorrect} / {result.total} (mode: {String(mode)})
-        </p>
-      )}
+    <div className="results">
+      <h2 className="results-title">Great job! 🎉</h2>
+
+      <div
+        className="results-stars"
+        role="img"
+        aria-label={`${stars} out of ${TOTAL_STARS} stars`}
+        data-stars={stars}
+      >
+        {Array.from({ length: TOTAL_STARS }, (_, i) => {
+          const filled = i < stars
+          return (
+            <span
+              key={i}
+              className={`star ${filled ? 'star-filled' : 'star-empty'}`}
+              data-filled={filled ? 'true' : 'false'}
+              aria-hidden="true"
+            >
+              {filled ? '⭐' : '☆'}
+            </span>
+          )
+        })}
+      </div>
+
+      <p className="results-score">
+        You got {firstTryCorrect} out of {total} right on the first try!
+      </p>
+
       <div className="results-buttons">
-        <button type="button" onClick={onPlayAgain}>
+        <button
+          type="button"
+          className="results-button results-play-again"
+          onClick={onPlayAgain}
+        >
           Play Again
         </button>
-        <button type="button" onClick={onBackToMenu}>
+        <button
+          type="button"
+          className="results-button results-back"
+          onClick={onBackToMenu}
+        >
           Back to Menu
         </button>
       </div>
