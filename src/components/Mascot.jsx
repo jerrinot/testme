@@ -1,31 +1,33 @@
 import { useMemo } from 'react'
+import dogUrl from '../assets/mascots/dog.png'
+import catUrl from '../assets/mascots/cat.png'
+import lionUrl from '../assets/mascots/lion.png'
+import rabbitUrl from '../assets/mascots/rabbit.png'
+import pandaUrl from '../assets/mascots/panda.png'
+import foxUrl from '../assets/mascots/fox.png'
+import frogUrl from '../assets/mascots/frog.png'
+import monkeyUrl from '../assets/mascots/monkey.png'
+import koalaUrl from '../assets/mascots/koala.png'
+import pigUrl from '../assets/mascots/pig.png'
 
-/**
- * Animal-emoji mascot for the game screen.
- *
- * The emoji list matches SPEC.md. `Mascot` picks one animal per mount:
- * because `Game` uses a `key={roundId}` to remount on Play Again, this
- * naturally rotates the mascot from round to round without any extra
- * bookkeeping here.
- *
- * Props:
- *   - `animal` (optional) — force a specific emoji; used in tests and
- *     storybook-style previews.
- *   - `celebrateTick` (optional) — a counter the parent increments
- *     whenever a correct answer is clicked. Each increment re-keys the
- *     inner `.mascot-body` so the one-shot wiggle keyframe restarts
- *     from frame 0. The idle bounce animation is always on.
- */
-const ANIMALS = ['🐶', '🐱', '🦁', '🐰', '🐼', '🦊', '🐸', '🐵', '🐨', '🐷']
+const ANIMALS = [
+  { id: 'dog', src: dogUrl },
+  { id: 'cat', src: catUrl },
+  { id: 'lion', src: lionUrl },
+  { id: 'rabbit', src: rabbitUrl },
+  { id: 'panda', src: pandaUrl },
+  { id: 'fox', src: foxUrl },
+  { id: 'frog', src: frogUrl },
+  { id: 'monkey', src: monkeyUrl },
+  { id: 'koala', src: koalaUrl },
+  { id: 'pig', src: pigUrl },
+]
 
 export default function Mascot({ animal, celebrateTick = 0 }) {
-  // Pick once per mount so the mascot doesn't swap on every re-render.
-  // Parent remounts (via `key`) to rotate between rounds.
   const chosen = useMemo(() => {
-    if (animal) return animal
+    if (animal) return ANIMALS.find((a) => a.id === animal) ?? ANIMALS[0]
     const idx = Math.floor(Math.random() * ANIMALS.length)
     return ANIMALS[idx]
-    // `animal` is the only real input; we want a stable pick otherwise.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animal])
 
@@ -35,21 +37,15 @@ export default function Mascot({ animal, celebrateTick = 0 }) {
     <div
       className="mascot"
       data-testid="mascot"
-      data-animal={chosen}
+      data-animal={chosen.id}
       role="img"
       aria-label="Friendly animal mascot"
     >
       <div
-        // Remounting on every new celebrate tick restarts the finite
-        // wiggle keyframe. The infinite idle bounce lives on the same
-        // class and keeps running uninterrupted across remounts because
-        // the browser resumes it at time 0 instantly.
         key={celebrateTick}
         className={`mascot-body${celebrating ? ' mascot-celebrating' : ''}`}
       >
-        <span className="mascot-emoji" aria-hidden="true">
-          {chosen}
-        </span>
+        <img className="mascot-image" src={chosen.src} alt="" />
       </div>
     </div>
   )

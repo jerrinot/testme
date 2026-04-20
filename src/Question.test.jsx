@@ -29,7 +29,11 @@ function renderQuestion(overrides = {}) {
 describe('Question', () => {
   it('renders progress, equation, and all four choice buttons', () => {
     renderQuestion()
-    expect(screen.getByText(/question 1 \/ 10/i)).toBeInTheDocument()
+    expect(screen.getByText(/question 1 of 10/i)).toBeInTheDocument()
+    const bar = screen.getByTestId('progress-bar')
+    const dots = bar.querySelectorAll('.progress-dot')
+    expect(dots).toHaveLength(10)
+    expect(dots[0].dataset.state).toBe('current')
     const equation = screen.getByTestId('equation')
     expect(equation).toHaveTextContent('7')
     expect(equation).toHaveTextContent('+')

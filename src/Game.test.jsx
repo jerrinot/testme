@@ -40,7 +40,7 @@ async function answerCorrectly(user) {
 describe('Game', () => {
   it('renders the first question with "Question 1 / 10"', () => {
     renderGame()
-    expect(screen.getByText(/question 1 \/ 10/i)).toBeInTheDocument()
+    expect(screen.getByText(/question 1 of 10/i)).toBeInTheDocument()
     expect(screen.getByTestId('game-screen')).toHaveAttribute(
       'data-mode',
       'addition',
@@ -53,7 +53,7 @@ describe('Game', () => {
     await user.click(screen.getByRole('button', { name: '1' }))
     await user.click(screen.getByRole('button', { name: '2' }))
     await user.click(screen.getByRole('button', { name: '3' }))
-    expect(screen.getByText(/question 1 \/ 10/i)).toBeInTheDocument()
+    expect(screen.getByText(/question 1 of 10/i)).toBeInTheDocument()
     expect(onFinish).not.toHaveBeenCalled()
   })
 
@@ -62,7 +62,7 @@ describe('Game', () => {
     const { onFinish } = renderGame()
     await answerCorrectly(user)
     await waitFor(() =>
-      expect(screen.getByText(/question 2 \/ 10/i)).toBeInTheDocument(),
+      expect(screen.getByText(/question 2 of 10/i)).toBeInTheDocument(),
     )
     expect(onFinish).not.toHaveBeenCalled()
   })
@@ -75,7 +75,7 @@ describe('Game', () => {
     for (let i = 1; i <= 10; i++) {
       await waitFor(() =>
         expect(
-          screen.getByText(new RegExp(`question ${i} / 10`, 'i')),
+          screen.getByText(new RegExp(`question ${i} of 10`, 'i')),
         ).toBeInTheDocument(),
       )
       await answerCorrectly(user)
@@ -97,7 +97,7 @@ describe('Game', () => {
     await user.click(screen.getByRole('button', { name: '1' }))
     await answerCorrectly(user)
     await waitFor(() =>
-      expect(screen.getByText(/question 2 \/ 10/i)).toBeInTheDocument(),
+      expect(screen.getByText(/question 2 of 10/i)).toBeInTheDocument(),
     )
     // Q2..Q10: clean first-try correct.
     for (let i = 2; i <= 10; i++) {
@@ -105,7 +105,7 @@ describe('Game', () => {
       if (i < 10) {
         await waitFor(() =>
           expect(
-            screen.getByText(new RegExp(`question ${i + 1} / 10`, 'i')),
+            screen.getByText(new RegExp(`question ${i + 1} of 10`, 'i')),
           ).toBeInTheDocument(),
         )
       }
@@ -129,14 +129,14 @@ describe('Game', () => {
     await user.click(screen.getByRole('button', { name: '3' }))
     await answerCorrectly(user)
     await waitFor(() =>
-      expect(screen.getByText(/question 2 \/ 10/i)).toBeInTheDocument(),
+      expect(screen.getByText(/question 2 of 10/i)).toBeInTheDocument(),
     )
     for (let i = 2; i <= 10; i++) {
       await answerCorrectly(user)
       if (i < 10) {
         await waitFor(() =>
           expect(
-            screen.getByText(new RegExp(`question ${i + 1} / 10`, 'i')),
+            screen.getByText(new RegExp(`question ${i + 1} of 10`, 'i')),
           ).toBeInTheDocument(),
         )
       }
@@ -218,7 +218,7 @@ describe('Game', () => {
     const answer = op === '+' ? a + b : a - b
     await user.click(screen.getByRole('button', { name: String(answer) }))
     await waitFor(() =>
-      expect(screen.getByText(/question 2 \/ 10/i)).toBeInTheDocument(),
+      expect(screen.getByText(/question 2 of 10/i)).toBeInTheDocument(),
     )
   })
 })

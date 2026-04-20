@@ -22,6 +22,30 @@
  * 'correct' or 'wrong'. Components import that and nothing else.
  */
 
+import dogSrc from '../assets/sounds/dog.ogg'
+import catSrc from '../assets/sounds/cat.ogg'
+import lionSrc from '../assets/sounds/lion.wav'
+import rabbitSrc from '../assets/sounds/rabbit.wav'
+import pandaSrc from '../assets/sounds/panda.ogg'
+import foxSrc from '../assets/sounds/fox.ogg'
+import frogSrc from '../assets/sounds/frog.ogg'
+import monkeySrc from '../assets/sounds/monkey.wav'
+import pigSrc from '../assets/sounds/pig.ogg'
+
+/* Animal clips sourced from Wikimedia Commons (see CREDITS.md). Koala
+ * has no Wikimedia recording so it falls through to the synth tone. */
+const ANIMAL_CLIPS = {
+  dog: dogSrc,
+  cat: catSrc,
+  lion: lionSrc,
+  rabbit: rabbitSrc,
+  panda: pandaSrc,
+  fox: foxSrc,
+  frog: frogSrc,
+  monkey: monkeySrc,
+  pig: pigSrc,
+}
+
 let audioCtx = null
 
 function getAudioContext() {
@@ -117,4 +141,40 @@ export function playWrongTone() {
 export function playTone(kind) {
   if (kind === 'correct') playCorrectTone()
   else if (kind === 'wrong') playWrongTone()
+}
+
+/**
+ * Play the animal-call clip for a mascot. Layered on top of Question's
+ * own "correct" chime, which plays in parallel — the chime is the
+ * reliable feedback signal, this is flavor. Animals without a clip
+ * (e.g. koala — no open recording on Wikimedia) silently no-op and
+ * the chime alone carries the moment.
+ *
+ * Uses HTMLAudioElement rather than the Web Audio context because the
+ * clips are tiny one-shot files and we don't need mixing, loops, or
+ * envelopes — just play and forget. A fresh element per call avoids
+ * the "already playing" re-trigger problem without any explicit reset.
+ */
+const ANIMAL_CLIP_MAX_SECONDS = 1.3
+
+export function playAnimal(id) {
+  if (typeof Audio === 'undefined') return
+  const src = ANIMAL_CLIPS[id]
+  if (!src) return
+  try {
+    const el = new Audio(src)
+    el.volume = 0.7
+    // The Wikimedia clips are authored for identification, not games —
+    // some run 3–6 seconds. Cap playback so feedback stays snappy and
+    // doesn't trample the next question's tone.
+    el.addEventListener('timeupdate', () => {
+      if (el.currentTime >= ANIMAL_CLIP_MAX_SECONDS) {
+        el.pause()
+        el.currentTime = 0
+      }
+    })
+    el.play().catch(() => {})
+  } catch {
+    // no-op
+  }
 }

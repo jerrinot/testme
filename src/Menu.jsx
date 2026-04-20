@@ -1,6 +1,8 @@
+import Collection from './components/Collection.jsx'
+
 /**
- * Home screen. Three large mode buttons; tapping one calls
- * `onSelectMode(mode)` which transitions the app to the game screen.
+ * Home screen. Three large mode buttons plus a friends shelf that
+ * grows as you play rounds. Tapping a mode calls `onSelectMode(mode)`.
  */
 const MODE_BUTTONS = [
   { mode: 'addition', label: 'Addition', emoji: '➕' },
@@ -8,7 +10,8 @@ const MODE_BUTTONS = [
   { mode: 'mixed', label: 'Mixed', emoji: '🔀' },
 ]
 
-export default function Menu({ onSelectMode }) {
+export default function Menu({ onSelectMode, progress }) {
+  const unlocked = progress?.unlockedMascots ?? []
   return (
     <div className="menu">
       <h1 className="menu-title">Math Fun! 🐾</h1>
@@ -28,6 +31,7 @@ export default function Menu({ onSelectMode }) {
           </button>
         ))}
       </div>
+      <Collection unlocked={unlocked} />
     </div>
   )
 }

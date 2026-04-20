@@ -106,6 +106,31 @@ body {
   overflow: hidden;
 }
 
+/* ---------- Visual backdrop ---------- */
+
+.visual-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.visual-backdrop-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  opacity: 0.85;
+}
+
+.menu,
+.game,
+.results {
+  position: relative;
+  z-index: 1;
+}
+
 /* ---------- Menu ---------- */
 
 .menu {
@@ -194,6 +219,80 @@ body {
   animation: mode-emoji-bounce 2.2s ease-in-out infinite;
 }
 
+/* ---------- Friends collection (home screen) ---------- */
+
+.collection {
+  margin: 2.25rem auto 0;
+  max-width: 760px;
+  padding: 1rem 1.25rem 1.1rem;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow: inset 0 2px 0 rgba(42, 33, 64, 0.05);
+}
+
+.collection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+  padding: 0 0.25rem;
+}
+
+.collection-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--fg);
+  letter-spacing: 0.01em;
+}
+
+.collection-count {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--accent-mix);
+}
+
+.collection-shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+  gap: 0.6rem;
+  justify-items: center;
+}
+
+.collection-slot {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg-accent);
+  box-shadow: inset 0 0 0 3px #ffffff, 0 3px 0 rgba(42, 33, 64, 0.1);
+}
+
+.collection-slot-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.collection-slot-locked .collection-slot-image {
+  filter: grayscale(0.95) brightness(1.12) contrast(0.7);
+  opacity: 0.55;
+}
+
+.collection-slot-lock {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(1px);
+}
+
 .mode-addition {
   background: var(--accent-add);
   color: #463200;
@@ -228,11 +327,109 @@ body {
 /* ---------- Question ---------- */
 
 .question-progress {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--fg-muted);
   margin-bottom: 0.75rem;
-  letter-spacing: 0.02em;
+  display: flex;
+  justify-content: center;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.progress-bar {
+  display: inline-flex;
+  gap: 0.45rem;
+  padding: 0.4rem 0.7rem;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  box-shadow: inset 0 2px 0 rgba(42, 33, 64, 0.06);
+}
+
+.progress-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(42, 33, 64, 0.14);
+  transition: transform 160ms ease-out, background-color 160ms ease-out;
+}
+
+.progress-dot-done {
+  background: var(--correct);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.progress-dot-current {
+  background: var(--accent-blue);
+  animation: progress-pulse 1.2s ease-in-out infinite;
+}
+
+/* ---------- Streak badge ---------- */
+
+.streak-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem 0.4rem 0.7rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #7a2a00;
+  background: linear-gradient(90deg, #ffe066, #ffb347);
+  border-radius: 999px;
+  box-shadow: 0 4px 0 rgba(42, 33, 64, 0.15);
+  animation: streak-pop 380ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  z-index: 5;
+  white-space: nowrap;
+}
+
+.streak-badge-hot {
+  background: linear-gradient(90deg, #ffb347, #ff7aa2);
+  color: #4a0a1f;
+}
+
+.streak-badge-peak {
+  background: linear-gradient(90deg, #ff7aa2, #c7b0ff, #5ebcff);
+  color: #2a1a5a;
+  font-size: 1.15rem;
+}
+
+.streak-flame {
+  font-size: 1.25rem;
+  display: inline-block;
+  animation: flame-flicker 900ms ease-in-out infinite;
+}
+
+/* ---------- Encouragement toast ---------- */
+
+.encouragement {
+  position: absolute;
+  top: 6.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.55rem 1.1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: var(--radius-md);
+  box-shadow: 0 6px 0 rgba(42, 33, 64, 0.12);
+  pointer-events: none;
+  z-index: 6;
+  animation: encourage-pop 1200ms cubic-bezier(0.2, 1.2, 0.4, 1) both;
+  white-space: nowrap;
 }
 
 .equation-wrap {
@@ -367,7 +564,6 @@ body {
   animation: mascot-bounce 1.8s ease-in-out infinite;
   transform-origin: 50% 80%;
   display: inline-block;
-  filter: drop-shadow(0 6px 0 rgba(42, 33, 64, 0.15));
 }
 
 .mascot-body.mascot-celebrating {
@@ -376,8 +572,18 @@ body {
     mascot-wiggle 700ms cubic-bezier(0.2, 1.4, 0.4, 1) 1;
 }
 
-.mascot-emoji {
-  display: inline-block;
+.mascot-image {
+  display: block;
+  width: clamp(7rem, 18vw, 10rem);
+  height: clamp(7rem, 18vw, 10rem);
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--bg-accent);
+  box-shadow:
+    0 6px 0 rgba(42, 33, 64, 0.12),
+    inset 0 0 0 4px #ffffff;
+  user-select: none;
+  pointer-events: none;
 }
 
 /* ---------- Celebration (stars + confetti) ---------- */
@@ -454,11 +660,20 @@ body {
 .star {
   display: inline-block;
   transform-origin: 50% 50%;
+  position: relative;
+}
+
+.star-image {
+  display: block;
+  width: clamp(3.25rem, 11vw, 5.5rem);
+  height: auto;
+  mix-blend-mode: multiply;
+  user-select: none;
+  pointer-events: none;
 }
 
 .star-filled {
   animation: star-pop 550ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
-  filter: drop-shadow(0 4px 0 rgba(240, 180, 20, 0.45));
 }
 
 .star-filled:nth-child(1) {
@@ -480,6 +695,52 @@ body {
   font-weight: 600;
   margin: 0 0 2rem;
   color: var(--fg);
+}
+
+.new-friend {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 480px;
+  margin: 0.5rem auto 1.5rem;
+  padding: 0.85rem 1.1rem;
+  background: linear-gradient(90deg, #fff0f6, #fff6ec);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 6px 0 rgba(42, 33, 64, 0.1);
+  animation: new-friend-pop 700ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  text-align: left;
+}
+
+.new-friend-image {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--bg-accent);
+  box-shadow: inset 0 0 0 3px #ffffff;
+  flex-shrink: 0;
+}
+
+.new-friend-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.new-friend-badge {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent-mix);
+  letter-spacing: 0.01em;
+}
+
+.new-friend-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--fg);
+  text-transform: capitalize;
 }
 
 .results-buttons {
@@ -709,6 +970,75 @@ body {
   100% {
     transform: scale(1) rotate(0deg);
     opacity: 1;
+  }
+}
+
+@keyframes new-friend-pop {
+  0% {
+    transform: scale(0.7) translateY(8px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes progress-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(94, 188, 255, 0.45);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 6px rgba(94, 188, 255, 0);
+  }
+}
+
+@keyframes streak-pop {
+  0% {
+    transform: translateX(-50%) scale(0.6) translateY(-6px);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(-50%) scale(1.08) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes flame-flicker {
+  0%, 100% {
+    transform: scale(1) rotate(-4deg);
+  }
+  50% {
+    transform: scale(1.12) rotate(4deg);
+  }
+}
+
+@keyframes encourage-pop {
+  0% {
+    transform: translateX(-50%) scale(0.6) translateY(6px);
+    opacity: 0;
+  }
+  20% {
+    transform: translateX(-50%) scale(1.1) translateY(-4px);
+    opacity: 1;
+  }
+  70% {
+    transform: translateX(-50%) scale(1) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(0.95) translateY(-8px);
+    opacity: 0;
   }
 }
 

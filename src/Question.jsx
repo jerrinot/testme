@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Celebration from './components/Celebration.jsx'
+import ProgressBar from './components/ProgressBar.jsx'
 import { playTone } from './lib/sound.js'
 
 const DEFAULT_CORRECT_DELAY_MS = 700
@@ -83,7 +84,10 @@ export default function Question({
   return (
     <div className="question">
       <div className="question-progress">
-        Question {questionNumber} / {total}
+        <ProgressBar current={questionNumber} total={total} />
+        <span className="sr-only">
+          Question {questionNumber} of {total}
+        </span>
       </div>
       <div className="equation-wrap">
         <div className="equation" data-testid="equation">

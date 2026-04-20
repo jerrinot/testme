@@ -1,4 +1,6 @@
 import Celebration from './components/Celebration.jsx'
+import { ANIMALS } from './components/Mascot.jsx'
+import starUrl from './assets/star.png'
 
 /**
  * Results screen shown after a 10-question round.
@@ -44,6 +46,10 @@ export default function Results({ result, onPlayAgain, onBackToMenu }) {
   const firstTryCorrect = result?.firstTryCorrect ?? 0
   const total = result?.total ?? 10
   const stars = starsForScore(firstTryCorrect)
+  const newMascotId = result?.newMascot
+  const newMascot = newMascotId
+    ? ANIMALS.find((a) => a.id === newMascotId)
+    : null
 
   return (
     <div className="results">
@@ -67,7 +73,7 @@ export default function Results({ result, onPlayAgain, onBackToMenu }) {
               data-filled={filled ? 'true' : 'false'}
               aria-hidden="true"
             >
-              {filled ? '⭐' : '☆'}
+              <img className="star-image" src={starUrl} alt="" />
             </span>
           )
         })}
@@ -76,6 +82,23 @@ export default function Results({ result, onPlayAgain, onBackToMenu }) {
       <p className="results-score">
         You got {firstTryCorrect} out of {total} right on the first try!
       </p>
+
+      {newMascot && (
+        <div className="new-friend" data-testid="new-friend" role="status">
+          <img
+            className="new-friend-image"
+            src={newMascot.src}
+            alt=""
+            aria-hidden="true"
+          />
+          <div className="new-friend-text">
+            <span className="new-friend-badge">New friend unlocked!</span>
+            <span className="new-friend-name">
+              Meet your {newMascot.id}!
+            </span>
+          </div>
+        </div>
+      )}
 
       <div className="results-buttons">
         <button

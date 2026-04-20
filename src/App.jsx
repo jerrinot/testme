@@ -2,7 +2,9 @@ import { useState } from 'react'
 import Menu from './Menu.jsx'
 import Game from './Game.jsx'
 import Results from './Results.jsx'
+import Backdrop from './components/Backdrop.jsx'
 import SoundToggle from './components/SoundToggle.jsx'
+import { loadProgress, recordRound } from './lib/progress.js'
 
 /**
  * Top-level state machine for the math-practice app.
@@ -31,6 +33,10 @@ export default function App() {
   const [result, setResult] = useState(null)
   const [roundId, setRoundId] = useState(0)
   const [soundOn, setSoundOn] = useState(false)
+  // Persistent progress — loaded once from localStorage, updated
+  // imperatively on round completion. The whole object is treated as
+  // immutable so `setProgress(next)` always re-renders dependents.
+  const [progress, setProgress] = useState(() => loadProgress())
 
   const startGame = (selectedMode) => {
     setMode(selectedMode)
@@ -40,7 +46,12 @@ export default function App() {
   }
 
   const finishGame = (gameResult) => {
-    setResult(gameResult)
+    // Persist the round; the library hands back the fresh progress
+    // snapshot and the mascot (if any) that just got unlocked so the
+    // Results screen can surface the "new friend!" moment.
+    const { progress: nextProgress, newMascot } = recordRound(gameResult)
+    setProgress(nextProgress)
+    setResult({ ...gameResult, newMascot })
     setScreen('results')
   }
 
@@ -63,16 +74,20 @@ export default function App() {
 
   return (
     <div className="app">
+      <Backdrop />
       {/* Pinned corner toggle — lives outside the per-screen content
           so it renders on every screen and its `on` state survives
           every transition. */}
       <SoundToggle on={soundOn} onToggle={toggleSound} />
-      {screen === 'menu' && <Menu onSelectMode={startGame} />}
+      {screen === 'menu' && (
+        <Menu onSelectMode={startGame} progress={progress} />
+      )}
       {screen === 'game' && (
         <Game
           key={roundId}
           mode={mode}
           soundOn={soundOn}
+          unlockedMascots={progress.unlockedMascots}
           onFinish={finishGame}
           onBackToMenu={backToMenu}
         />

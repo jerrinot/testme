@@ -11,8 +11,8 @@ function renderResults(overrides = {}) {
     onBackToMenu: vi.fn(),
     ...overrides,
   }
-  render(<Results {...props} />)
-  return props
+  const utils = render(<Results {...props} />)
+  return { ...props, ...utils }
 }
 
 describe('starsForScore', () => {
@@ -46,16 +46,16 @@ describe('Results', () => {
     [9, 3],
     [10, 3],
   ])('renders %d filled star(s) for a score of %d', (score, expectedStars) => {
-    renderResults({ result: { firstTryCorrect: score, total: 10 } })
-    const filled = screen
-      .getAllByText('⭐')
-      .filter((el) => el.dataset.filled === 'true')
+    const { container } = renderResults({
+      result: { firstTryCorrect: score, total: 10 },
+    })
+    const filled = container.querySelectorAll('.star[data-filled="true"]')
     expect(filled).toHaveLength(expectedStars)
-    const container = screen.getByRole('img', {
+    const starsContainer = screen.getByRole('img', {
       name: new RegExp(`${expectedStars} out of 3 stars`, 'i'),
     })
-    expect(container).toBeInTheDocument()
-    expect(container.dataset.stars).toBe(String(expectedStars))
+    expect(starsContainer).toBeInTheDocument()
+    expect(starsContainer.dataset.stars).toBe(String(expectedStars))
   })
 
   it('Play Again button calls onPlayAgain', async () => {
